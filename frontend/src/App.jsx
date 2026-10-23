@@ -21,11 +21,50 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [message, setMessage] = useState("");
 
+
+  
+
+
+ 
   useEffect(() => {
-    if (token) {
-      loadTasks();
-    }
+    if (!token) return;
+
+    let cancelled = false;
+
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/tasks`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (cancelled) return;
+
+        if (!response.ok) {
+          setMessage(data.message);
+          return;
+        }
+
+        setTasks(data.tasks);
+      } catch (error) {
+        if (cancelled) return;
+
+        console.error(error);
+        setMessage("Unable to load tasks");
+      }
+    };
+
+    fetchTasks();
+
+    return () => {
+      cancelled = true;
+    };
   }, [token]);
+
+
 
   const handleAuthChange = (e) => {
     setAuthForm({
@@ -94,27 +133,7 @@ function App() {
     }
   };
 
-  const loadTasks = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/tasks`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setMessage(data.message);
-        return;
-      }
-
-      setTasks(data.tasks);
-    } catch (error) {
-      console.error(error);
-      setMessage("Unable to load tasks");
-    }
-  };
 
   const createTask = async (e) => {
     e.preventDefault();
