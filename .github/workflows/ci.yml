@@ -65,3 +65,27 @@ jobs:
 
       - name: Validate backend JavaScript syntax
         run: node --check src/app.js
+  
+  docker-build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs:
+      - frontend
+      - backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: |
+          docker build \
+            -t task-manager-backend:${{ github.sha }} \
+            ./backend
+
+      - name: Build frontend image
+        run: |
+          docker build \
+            -t task-manager-frontend:${{ github.sha }} \
+            ./frontend
+
