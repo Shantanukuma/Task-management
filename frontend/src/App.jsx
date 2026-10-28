@@ -16,16 +16,17 @@ function App() {
   const [taskForm, setTaskForm] = useState({
     title: "",
     description: "",
+    priority: "Medium",
   });
 
   const [tasks, setTasks] = useState([]);
   const [message, setMessage] = useState("");
 
 
-  
 
 
- 
+
+
   useEffect(() => {
     if (!token) return;
 
@@ -165,6 +166,7 @@ function App() {
       setTaskForm({
         title: "",
         description: "",
+        priority: "Medium",
       });
 
       setMessage("Task created successfully");
@@ -313,6 +315,20 @@ function App() {
               rows="4"
             />
 
+            <label htmlFor="priority">Task Priority</label>
+
+            <select
+              id="priority"
+              name="priority"
+              value={taskForm.priority}
+              onChange={handleTaskChange}
+            >
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+
+
             <button className="primary-btn" type="submit">
               + Add Task
             </button>
@@ -335,12 +351,19 @@ function App() {
             <div className="task-grid">
               {tasks.map((task) => (
                 <div className="task-card" key={task.id}>
+
                   <div>
                     <h3>{task.title}</h3>
+
+                    <span className={`priority-badge priority-${task.priority || "Medium"}`}>
+                      {task.priority || "Medium"} Priority
+                    </span>
+
                     <p>
                       {task.description || "No description"}
                     </p>
                   </div>
+
 
                   <button
                     className="delete-btn"

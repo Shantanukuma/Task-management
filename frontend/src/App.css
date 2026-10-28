@@ -256,3 +256,28 @@ main {
     padding: 28px;
   }
 }
+
+
+.priority-badge {
+  display: inline-block;
+  margin: 8px 0;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.priority-Low {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.priority-Medium {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.priority-High {
+  background-color: #fee2e2;
+  color: #991b1b;
+}

@@ -1,22 +1,33 @@
 const pool = require("../db/pool");
 
+
 const createTask = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, priority = "Medium" } = req.body;
     const userId = req.user.userId;
 
-    if (!title) {
+    if (!title || !title.trim()) {
       return res.status(400).json({
         success: false,
         message: "Task title is required",
       });
     }
 
+    const allowedPriorities = ["Low", "Medium", "High"];
+
+    if (!allowedPriorities.includes(priority)) {
+      return res.status(400).json({
+        success: false,
+        message: "Priority must be Low, Medium, or High",
+      });
+    }
+
     const result = await pool.query(
-      `INSERT INTO tasks (user_id, title, description)
-       VALUES ($1, $2, $3)
-       RETURNING id, user_id, title, description, completed, created_at`,
-      [userId, title, description || null]
+      `INSERT INTO tasks (user_id, title, description, priority)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, user_id, title, description,
+                 completed, priority, created_at`,
+      [userId, title.trim(), description || null, priority]
     );
 
     res.status(201).json({
@@ -34,12 +45,15 @@ const createTask = async (req, res) => {
   }
 };
 
+
+
 const getTasks = async (req, res) => {
   try {
     const userId = req.user.userId;
 
     const result = await pool.query(
-      `SELECT id, title, description, completed, created_at
+      `SELECT id, title, description, completed,
+              priority, created_at
        FROM tasks
        WHERE user_id = $1
        ORDER BY created_at DESC`,
@@ -59,6 +73,7 @@ const getTasks = async (req, res) => {
     });
   }
 };
+
 
 const deleteTask = async (req, res) => {
   try {
